@@ -39,6 +39,10 @@ class Category extends Model {
       as: 'words',
       foreignKey: 'categoryId'
     })
+    this.hasMany(models.Question, {
+      as: 'questions',
+      foreignKey: 'categoryId'
+    })
   }
 
   static config(sequelize) {
