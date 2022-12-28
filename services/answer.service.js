@@ -15,6 +15,16 @@ class AnswerService {
     return data;
   }
 
+  async findByQuestionId(id) {
+    const data = await models.Answer.findAll({
+      where: {
+        questionId: id
+      }
+    });
+
+    return data;
+  }
+
   async findOne(id) {
     const data = await models.Answer.findByPk(id);
     if(!data){
@@ -37,6 +47,7 @@ class AnswerService {
     await data.destroy();
     return id;
   }
+
 
 }
 

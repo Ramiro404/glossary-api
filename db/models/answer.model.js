@@ -27,14 +27,14 @@ const AnswerSchema = {
   },
   questionId: {
     field: 'question_id',
-    allowNull: false,
+    allowNull: true,
     type: DataTypes.INTEGER,
     references: {
       model: QUESTION_MODEL,
       key: 'id',
     },
     onUpdate: 'CASCADE',
-    onDelete: 'SET NULL'
+    onDelete: 'CASCADE'
   }
 }
 

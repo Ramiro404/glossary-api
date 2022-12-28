@@ -82,6 +82,19 @@ router.patch('/:id',
     }
 );
 
+router.delete('/category/:id',
+    validatorHandler(getQuestionSchema, 'params'),
+    async (req, res, next) => {
+        try {
+            const { id } = req.params;
+            const data = await service.deleteAllQuestionsByCategoryId(id);
+            res.status(201).json(data);
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+
 router.delete('/:id',
     validatorHandler(getQuestionSchema, 'params'),
     async (req, res, next) => {

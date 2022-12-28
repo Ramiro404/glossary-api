@@ -1,10 +1,9 @@
 const boom = require('@hapi/boom');
-const { Answer } = require('../db/models/answer.model');
+//const { Answer } = require('../db/models/answer.model');
 const { models } = require('../libs/sequelize')
-
 class QuestionService {
 
-  constructor(){
+  constructor() {
   }
   async create(data) {
     const newQuestion = await models.Question.create(data);
@@ -16,36 +15,45 @@ class QuestionService {
     return data;
   }
 
-  async findByCategoryId(id){
+  async findByCategoryId(id) {
     const data = await models.Question.findAll({
       where: {
         categoryId: id
-      }
+      },
+      include: ['answers']
     });
     return data;
   }
 
   async findOne(id) {
-    const data = await models.Question.findByPk(id);
-    if(!data){
-        throw boom.notFound("Question not found");
-      }
+    const data = await models.Question.findByPk(id, {
+      include: ['answers']
+    });
+    if (!data) {
+      throw boom.notFound("Question not found");
+    }
     return data;
   }
 
   async update(id, changes) {
     const data = await this.findOne(id);
-    const rta = await data.update(changes);
-    if(!data){
+    const rta = await data.update(changes, {
+      include: ['answers']
+    });
+    if (!data) {
       throw boom.notFound("Question not found");
     }
     return rta;
   }
 
-  async delete(id) {
-    const data = await this.findOne(id);
-    await data.destroy();
-    return id;
+  async delete(question) {
+    if (question.dataValues.answers.length > 0) {
+      question.dataValues.answers.forEach(async (answer) => {
+        await answer.destroy();
+      })
+    }
+    await question.destroy();
+    return true;
   }
 
   async addQuestionsAnswer(rowData) {
@@ -53,6 +61,18 @@ class QuestionService {
       include: ['answers']
     });
     return response;
+  }
+
+  async deleteAllQuestionsByCategoryId(id) {
+    try {
+      const questionaire = await this.findByCategoryId(id);
+      questionaire.forEach(async (question) => {
+        await this.delete(question);
+      });
+      return questionaire;
+    } catch (error) {
+      return error;
+    }
   }
 
 }

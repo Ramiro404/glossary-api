@@ -15,6 +15,19 @@ router.get('/', async (req, res, next) => {
     }
 });
 
+router.get('/question/:id',
+    validatorHandler(getAnswerSchema, 'params'),
+    async (req, res, next) => {
+        try {
+            const { id } = req.params;
+            const data = await service.findByQuestionId(id);
+            res.json(data);
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+
 router.get('/:id',
     validatorHandler(getAnswerSchema, 'params'),
     async (req, res, next) => {
@@ -27,6 +40,8 @@ router.get('/:id',
         }
     }
 );
+
+
 
 router.post('/',
     validatorHandler(createAnswerSchema, 'body'),
